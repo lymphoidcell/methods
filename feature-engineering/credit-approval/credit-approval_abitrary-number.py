@@ -16,3 +16,14 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=0,
 )
 
+# which columns have missing values?
+missing_values = X_train.isnull().sum()
+
+print(missing_values)
+
+# maximum values
+print(X_train[['A2','A3', 'A8', 'A11']].max())
+
+# imputation using value that is bigger than the maximum values
+X_train_rep = X_train.copy()
+X_test_rep = X_test.copy()
