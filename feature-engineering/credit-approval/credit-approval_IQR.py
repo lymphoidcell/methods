@@ -35,4 +35,20 @@ imputation_dict = (
 X_train_rep = X_train.fillna(value=imputation_dict)
 X_test_rep = X_test.fillna(value=imputation_dict)
 
+# imputer
+# right of the distribution
+imputer = EndTailImputer(
+    imputation_method="iqr",
+    tail="right",
+    fold=3,
+    variables=None,
+)
 
+# fit EndTailImputer()
+imputer.fit(X_train)
+
+print(imputer.imputer_dict_)
+
+# replace
+X_train = imputer.transform(X_train)
+X_test = imputer.transform(X_test)
