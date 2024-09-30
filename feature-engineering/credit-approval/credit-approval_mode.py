@@ -29,7 +29,44 @@ modes = X_train[
 
 # replace missing values with modes
 X_train_rep = X_train.fillna(value=modes)
-X_test_rep = X_test.fillna(values=modes)
+X_test_rep = X_test.fillna(value=modes)
 
 # replace data for a specific string
 imputation_dictionary = {var: "no_data" for var in categorical_variables}
+
+# set up imputer to find the mode per variable
+imputer = SimpleImputer(strategy='most_frequent')
+
+# restrict to categorical variables only
+ct = ColumnTransformer(
+    [("imputer", imputer, categorical_variables)],
+    remainder="passthrough",
+).set_output(transform="pandas")
+
+# fit the imputer
+ct.fit(X_train)
+
+print(ct.named_transformers_.imputer.statistics_)
+
+# replace missing values with the mode
+X_train_rep = ct.transform(X_train)
+X_test_rep = ct.transform(X_test)
+
+# check
+print(X_train_rep.head())
+
+# replace the missing data with the mode
+imputer = CategoricalImputer(
+    imputation_method="frequent",
+    variables=categorical_variables,
+)
+
+# fit the imputer
+imputer.fit(X_train)
+
+# check
+print(imputer.imputer_dict_)
+
+# replace missing values with frequent categories
+X_train_rep = imputer.transform(X_train)
+X_test_rep = imputer.transform(X_test)
